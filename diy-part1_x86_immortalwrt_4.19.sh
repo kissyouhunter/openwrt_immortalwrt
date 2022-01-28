@@ -31,3 +31,4 @@ wget -O ./package/emortal/default-settings/files/openwrt_banner https://raw.gith
 sed -i 's/LINUX_KERNEL_HASH-4.19.225 = 4b9ab3979541cd436b7b7e8905c77ffcf594a9cf4ea3fb9474ef95fe09586796/LINUX_KERNEL_HASH-4.19.226 = 939f78a66d1535ad8ae6d60d54558702f741cb1b7850ac113809589212dd38ad/g' ./include/kernel-version.mk
 
 sed -i 's/LLINUX_VERSION-4.19 = .225/LINUX_VERSION-4.19 = .226/g' ./include/kernel-version.mk
+
