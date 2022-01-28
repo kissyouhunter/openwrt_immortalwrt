@@ -28,6 +28,6 @@ wget -O ./package/emortal/default-settings/files/openwrt_banner https://raw.gith
 
 # kernel 5.4.173
 
-sed -i 's/LINUX_KERNEL_HASH-5.4.162 = c12d72ddaac78189305a5e98825295ecb02282970033b052276035e83189e25b/LINUX_KERNEL_HASH-5.4.173 = 99e8e275b239c708bdb6a41990c4d12098a61752245dbef921a514d9f996c239/g' ./include/kernel-version.mk
+sed -i 's/LINUX_KERNEL_HASH-5.4.162 = c12d72ddaac78189305a5e98825295ecb02282970033b052276035e83189e25b/LINUX_KERNEL_HASH-5.4.174 = e8cd1be5aefaf9b44024b039e31b6cb21135ab67f322e8dff98be5a9998308a9/g' ./include/kernel-version.mk
 
-sed -i 's/LINUX_VERSION-5.4 = .162/LINUX_VERSION-5.4 = .173/g' ./include/kernel-version.mk
+sed -i 's/LINUX_VERSION-5.4 = .162/LINUX_VERSION-5.4 = .174/g' ./include/kernel-version.mk
