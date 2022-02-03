@@ -26,7 +26,7 @@ wget -O ./package/emortal/autocore/files/generic/index.htm https://raw.githubuse
 # 替换banner
 wget -O ./package/emortal/default-settings/files/openwrt_banner https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/x86_immortalwrt/openwrt_banner
 
-# 内核替换成 kernel 4.19.226
+# 内核替换成 kernel 4.19.227
 
 sed -i 's/LINUX_KERNEL_HASH-4.19.225 = 4b9ab3979541cd436b7b7e8905c77ffcf594a9cf4ea3fb9474ef95fe09586796/LINUX_KERNEL_HASH-4.19.227 = 69dc962037ca75e51aa53ce8297c762ea5ffcd434fba314019d1dfdcbaf73234/g' ./include/kernel-version.mk
 
