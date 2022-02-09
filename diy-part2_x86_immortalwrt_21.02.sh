@@ -69,9 +69,3 @@ sed -i 's/vpn/network/g' ./feeds/luci/applications/luci-app-zerotier/luasrc/cont
 #adguarhome核心下载增加代理
 
 sed -i 's|https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz|https://ghproxy.com/https://github.com/AdguardTeam/AdGuardHome/releases/download/${latest_ver}/AdGuardHome_linux_${Arch}.tar.gz|g' ./feeds/luci/applications/luci-app-adguardhome/root/usr/share/AdGuardHome/links.txt
-
-# kernel 5.4.171
-
-sed -i 's/LINUX_KERNEL_HASH-5.4.168 = ecb79ac4d465623560a6da31e3b0a0cf3fbb7c09e9ba88f06567436757191181/LINUX_KERNEL_HASH-5.4.172 = b19e890b67e8293008262d3518cab47be58462c63da43f2c9832d63644886ce4/g' ./include/kernel-version.mk
-
-sed -i 's/LINUX_VERSION-5.4 = .168/LINUX_VERSION-5.4 = .172/g' ./include/kernel-version.mk
