@@ -28,9 +28,9 @@ wget -O ./package/emortal/default-settings/files/openwrt_banner https://raw.gith
 
 # 下载官方18.06 mac80211
 
-rm -f package/kernel/mac80211/*
+rm -rf ./package/kernel/mac80211/
 
-svn co  https://github.com/openwrt/openwrt/branches/openwrt-18.06/package/kernel/mac80211 ./package/kernel/mac80211/
+svn co https://github.com/openwrt/openwrt/branches/openwrt-18.06/package/kernel/mac80211 ./package/kernel/mac80211/
 
 # 替换内核
 sed -i 's/KERNEL_PATCHVER:=4.19/KERNEL_PATCHVER:=4.9/g' ./target/linux/x86/Makefile
