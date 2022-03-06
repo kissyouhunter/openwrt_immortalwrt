@@ -26,6 +26,12 @@ wget -O ./package/emortal/autocore/files/generic/index.htm https://raw.githubuse
 # 替换banner
 wget -O ./package/emortal/default-settings/files/openwrt_banner https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/x86_immortalwrt/openwrt_banner
 
+# 下载官方18.06 mac80211
+
+rm -f package/kernel/mac80211/*
+
+svn co  https://github.com/openwrt/openwrt/branches/openwrt-18.06/package/kernel/mac80211 ./package/kernel/mac80211/
+
 # 替换内核
 sed -i 's/KERNEL_PATCHVER:=4.19/KERNEL_PATCHVER:=4.9/g' ./target/linux/x86/Makefile
 
