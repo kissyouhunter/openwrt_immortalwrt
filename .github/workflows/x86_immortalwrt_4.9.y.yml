@@ -23,7 +23,7 @@ env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-18.06
   FEEDS_CONF: immortalwrt_4.19.feeds.conf.default
-  CONFIG_FILE: x86_immortalwrt_4.9.config
+  CONFIG_FILE: x86_immortalwrt_4.19.config
   DIY_P1_SH: diy-part1_x86_immortalwrt_4.9.sh
   DIY_P2_SH: diy-part2_x86_immortalwrt.sh
   UPLOAD_BIN_DIR: false
