@@ -21,10 +21,7 @@ sed -i 's/192.168.1.1/192.168.2.3/g' package/base-files/files/bin/config_generat
 echo "#iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
 
 #修改build日期
-#echo "sed -i '/DISTRIB_REVISION/d' /etc/openwrt_release" >> package/emortal/default-settings/files/99-default-settings
-#echo "echo "DISTRIB_REVISION='$(TZ=UTC-8 date "+%Y.%m.%d") powered by kissyouhunter'" >> /etc/openwrt_release" >> package/emortal/default-settings/files/99-default-settings
-#echo "sed -i '/DISTRIB_DESCRIPTION/d' /etc/openwrt_release" >> package/emortal/default-settings/files/99-default-settings
-#echo "echo "DISTRIB_DESCRIPTION='ImmortalWrt 18.06-SNAPSHOT '" >> /etc/openwrt_release" >> package/emortal/default-settings/files/99-default-settings
+curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/99-default-settings/openwrt-18.06-k5.4/99-default-settings
 
 #删除默认密码
 #sed -i "/CYXluq4wUazHjmCDBCqXF/d" package/lean/default-settings/files/zzz-default-settings
