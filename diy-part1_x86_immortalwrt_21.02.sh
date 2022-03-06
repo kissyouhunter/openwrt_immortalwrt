@@ -26,9 +26,9 @@ svn co https://github.com/kissyouhunter/openwrt-packages/trunk/luci-app-poweroff
 # 替换banner
 wget -O ./package/emortal/default-settings/files/openwrt_banner https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/x86_immortalwrt/openwrt_banner_21.02
 
-# kernel 5.4.175
+# kernel 5.4.182
 
 sed -i 's/LINUX_KERNEL_HASH-5.4.179 = 2c9bdec0922a95aff34e8d53d2e0ecf7e842033cd908d2959a43d34afb5d897d/LINUX_KERNEL_HASH-5.4.182 = b2f1201f64f010e9e3c85d6f303a559a7944a80a0244a86b8f5035bd23f1f40d/g' ./include/kernel-version.mk
 
-#sed -i 's/LINUX_VERSION-5.4 = .179/LINUX_VERSION-5.4 = .180/g' ./include/kernel-version.mk
+sed -i 's/LINUX_VERSION-5.4 = .179/LINUX_VERSION-5.4 = .182/g' ./include/kernel-version.mk
 
