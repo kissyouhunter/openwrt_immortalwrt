@@ -56,17 +56,15 @@ jobs:
     
     - name: telegrame_bot
       run: |
+        cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq -c > CPU
+        cat /proc/cpuinfo | grep "cpu cores" | uniq >> CPU
+        sed -i 's|[[:space:]]||g; s|^.||' CPU && sed -i 's|CPU||g; s|pucores:||' CPU
+        CPUNAME="$(awk 'NR==1' CPU)" && CPUCORES="$(awk 'NR==2' CPU)"
+        rm -rf CPU
         if [[ "${SERVERCHAN_SCKEY}" == "true" ]]; then
           curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=🎉 主人：
-          您正在使用kissyouhunter仓库的 ${{ github.event.inputs.set_kernel }} lede 编译您自己的固件,请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
-        fi
-        
-    - name: MachineType
-      run: |
-        cat /proc/cpuinfo
-        cat /proc/meminfo
-        cat /etc/issue
-        cat /proc/version    
+          您正在使用kissyouhunter仓库的  {CPU型号为 [ ${CPUNAME} ] 核心数 为 [ ${CPUCORES} ] 线程数为 [ $(nproc) ]的机器} 编译 ${{ github.event.inputs.set_kernel }} immortalwrt 的固件,请耐心等待...... 😋" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+        fi 
         
     - name: Checkout
       uses: actions/checkout@main
@@ -245,5 +243,5 @@ jobs:
       run: |
         if [[ "${SERVERCHAN_SCKEY}" == "true" ]]; then
           curl -k --data chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" --data "text=我亲爱的✨主人✨：
-          您使用kissyouhunter仓库的 ${{ github.event.inputs.set_kernel }} lede 固件顺利编译完成了！💐" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
+          您使用kissyouhunter仓库的 ${{ github.event.inputs.set_kernel }} immortalwrt 固件顺利编译完成了！💐" "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage"
         fi
