@@ -19,6 +19,7 @@
 
 # 下载插件
 svn co https://github.com/kissyouhunter/openwrt-packages/trunk/luci-app-poweroff ./package/luci-app-poweroff
+svn co https://github.com/kissyouhunter/openwrt-packages/trunk/luci-app-adguardhome ./package/luci-app-adguardhome
 
 # 替换index.htm文件 X86
 wget -O ./package/emortal/autocore/files/generic/index.htm https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/x86_immortalwrt/index_x86_immortalwrt.htm
