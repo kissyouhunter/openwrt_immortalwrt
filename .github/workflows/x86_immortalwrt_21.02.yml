@@ -145,9 +145,10 @@ jobs:
       run: |
         cd openwrt/bin/targets/*/*
         rm -rf packages
-        rm -f config.buildinfo feeds.buildinfo immortalwrt-x86-64-generic-kernel.bin immortalwrt-x86-64-generic-rootfs.tar.gz immortalwrt-x86-64-generic-squashfs-rootfs.img.gz immortalwrt-x86-64-generic.manifest sha256sums version.buildinfo
+        rm -f config.buildinfo feeds.buildinfo immortalwrt-x86-64-generic-kernel.bin immortalwrt-x86-64-generic-squashfs-rootfs.img.gz immortalwrt-x86-64-generic.manifest sha256sums version.buildinfo
         mv immortalwrt-x86-64-generic-squashfs-combined-efi.img.gz immortalwrt-x86-64-21.02-5.4.Y-combined-efi.img.gz
         mv immortalwrt-x86-64-generic-squashfs-combined.img.gz immortalwrt-x86-64-21.02-5.4.Y-combined.img.gz
+        MV immortalwrt-x86-64-generic-rootfs.tar.gz immortalwrt-x86-64-21.02-5.4.Y-generic-rootfs.tar.gz
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
         echo "::set-output name=status::success"
 
