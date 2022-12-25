@@ -153,9 +153,10 @@ jobs:
         echo "status=success" >> $GITHUB_OUTPUT
 
     - name: Upload firmware directory
-      uses: kittaakos/upload-artifact-as-is@master
+      uses: actions/upload-artifact@master
       if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
+        name: immortalwrt-x86-64-5.4.Y
         path: ${{ env.FIRMWARE }}
 
     #- name: Upload firmware to cowtransfer
