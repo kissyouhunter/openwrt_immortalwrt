@@ -233,7 +233,7 @@ jobs:
 
     - name: Upload firmware to release
       uses: ncipollo/release-action@v1
-      if: steps.tag.outputs.status == 'success' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && !cancelled()
       with:
         token: ${{ secrets.REPO_TOKEN }}
         name:  Openwrt_X86_without_docker
