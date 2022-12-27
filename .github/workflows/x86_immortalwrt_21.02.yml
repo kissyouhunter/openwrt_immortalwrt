@@ -22,6 +22,10 @@ on:
         description: "输入具体内核版本:"
         required: false
         default: "5.4.x"
+      upload_firmware:
+        description: "whether to  upload firmware."
+        required: false
+        default: "false"
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-21.02
@@ -30,10 +34,8 @@ env:
   DIY_P1_SH: diy-part1_x86_immortalwrt_21.02.sh
   DIY_P2_SH: diy-part2_x86_immortalwrt_21.02.sh
   UPLOAD_BIN_DIR: false
-  UPLOAD_FIRMWARE: true
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
-  UPLOAD_RELEASE: false
   SERVERCHAN_SCKEY: true
   TZ: Asia/Shanghai
 
@@ -72,6 +74,8 @@ jobs:
         sudo timedatectl set-timezone "$TZ"
         sudo mkdir -p /workdir
         sudo chown $USER:$GROUPS /workdir
+        upload_firmware="${{ github.event.inputs.upload_firmware }}"
+        echo "UPLOAD_FIRMWARE=${upload_firmware}" >> $GITHUB_ENV
 
     - name: Clone source code
       working-directory: /workdir
@@ -161,7 +165,7 @@ jobs:
 
     - name: Upload firmware directory
       uses: actions/upload-artifact@master
-      if: steps.organize.outputs.status == 'success' && !cancelled()
+      if: steps.organize.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
       with:
         name: ${{ env.IMMORTALWRT }}
         path: ${{ env.FIRMWARE }}
@@ -196,11 +200,34 @@ jobs:
 
     - name: Upload firmware to release
       uses: ncipollo/release-action@v1
-      if: steps.tag.outputs.status == 'success' && env.UPLOAD_RELEASE == 'true' && !cancelled()
+      if: steps.tag.outputs.status == 'success' && !cancelled()
       with:
-        token: ${{ secrets.RELEASES_TOKEN }}
-        tag: immortalwrt
-        replacesArtifacts: true
+        token: ${{ secrets.REPO_TOKEN }}
+        name:  Openwrt_X86_without_docker
+        tag: openwrt_x86
+        commit: main
+        allowUpdates: true
+        repo: Openwrt_X86-Openwrt_N1-Armbian_N1
+        body: |
+          ## Openwrt_X86:
+
+          * lede 大雕 openwrt 内核 5.4 5.10 and 5.15 (5.15为精简旁路由版)
+
+          * immortalwrt 天灵 openwrt 内核 4.19 and openwrt 21.02-5.4 旁路由
+
+          * lienol openwrt 22.03 内核 5.10 (无密码)
+
+          * IP: 192.168.2.3 ID: root Password: password
+
+          * adguardhome已内置好DNS和广告过滤，下载好核心后开启即可。
+
+          * adguardhome ID: root Password: password
+
+          * rootfs 文件是lxc专用，例如PVE的CT模板。([教程](https://nb0.cc/lxc))
+
+          * x86固件不带docker,请用一键脚本自行安装。
+
+          * （一键脚本： bash <(curl -s -S -L nb0.cc/kiss) 或者 curl -Lo kiss.sh nb0.cc/kiss && bash kiss.sh）
         artifacts: ${{ env.FIRMWARE }}/*
 
     #- name: Delete workflow runs
