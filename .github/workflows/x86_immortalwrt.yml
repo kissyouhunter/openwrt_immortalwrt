@@ -19,14 +19,13 @@ on:
         required: false
         default: 'false'
       set_kernel:
-        description: "KERNEL: 4.9.y / 4.14.y / 4.19.y"
+        description: "KERNEL: 4.14.y / 4.19.y"
         required: false
         default: "4.19.y"
         type: choice
         options:
           - "4.19.y"
           - "4.14.y"
-          - "4.9.y"
       set_kernel_version:
         description: "输入具体内核版本:"
         required: false
@@ -57,9 +56,7 @@ jobs:
     - name: choose kernel
       run: |
         set_kernel="${{ github.event.inputs.set_kernel }}"
-        if [ "$set_kernel" = "4.9.y" ]; then
-            file="diy-part1_x86_immortalwrt_4.9.sh"
-        elif [ "$set_kernel" = "4.14.y" ]; then
+        if [ "$set_kernel" = "4.14.y" ]; then
             file="diy-part1_x86_immortalwrt_4.14.sh"
         elif [ "$set_kernel" = "4.19.y" ]; then
             file="diy-part1_x86_immortalwrt_4.19.sh"
@@ -192,10 +189,6 @@ jobs:
             mv immortalwrt-x86-64-generic-squashfs-combined-efi.img.gz immortalwrt-x86-64-${KERNEL_VERSION}-combined-efi.img.gz
             mv immortalwrt-x86-64-generic-squashfs-combined.img.gz immortalwrt-x86-64-${KERNEL_VERSION}-combined.img.gz
             mv immortalwrt-x86-64-generic-rootfs.tar.gz immortalwrt-x86-64-4.14.Y-generic-rootfs.tar.gz
-        elif [ "$DIY_P1_SH" = "diy-part1_x86_immortalwrt_4.9.sh" ]; then
-            mv immortalwrt-x86-64-generic-squashfs-combined-efi.img.gz immortalwrt-x86-64-${KERNEL_VERSION}-combined-efi.img.gz
-            mv immortalwrt-x86-64-generic-squashfs-combined.img.gz immortalwrt-x86-64-${KERNEL_VERSION}-combined.img.gz
-            mv immortalwrt-x86-64-generic-rootfs.tar.gz immortalwrt-x86-64-4.9.Y-generic-rootfs.tar.gz
         fi
         echo "IMMORTALWRT=immortalwrt-x86-64-${KERNEL_VERSION}" >> $GITHUB_ENV
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
