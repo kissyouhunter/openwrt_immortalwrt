@@ -68,10 +68,10 @@ jobs:
 
         NUMBER=$(echo "${KERNEL_VERSION}" | awk -F'.' '{print $NF}')
         echo ${NUMBER}
-        sed -i 's/VERSION_NUMBER/${NUMBER}/g' $DIY_P1_SH
+        sed -i 's/VERSION_NUMBER/${NUMBER}/g' $GITHUB_WORKSPACE/$DIY_P1_SH
         KERNEL_SHA256=$(curl -sS https://mirrors.edge.kernel.org/pub/linux/kernel/v4.x/sha256sums.asc | grep linux-${KERNEL_VERSION}.tar.xz | awk '{print $1}')
         echo ${KERNEL_SHA256}
-        sed -i 's/NEW_SHA256/${KERNEL_SHA256}/g' $DIY_P1_SH
+        sed -i 's/NEW_SHA256/${KERNEL_SHA256}/g' $GITHUB_WORKSPACE/$DIY_P1_SH
         cat $DIY_P1_SH
     
     - name: telegrame_bot
