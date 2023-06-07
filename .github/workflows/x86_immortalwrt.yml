@@ -115,7 +115,7 @@ jobs:
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
         NUMBER=$(echo "${{ github.event.inputs.set_kernel_version }}" | awk -F'.' '{print $NF}')
-        sed -i 's/VERSION/$NUMBER/g' $DIY_P1_SH
+        sed -i 's/VERSION_NUMBER/$NUMBER/g' $DIY_P1_SH
         KERNEL_SHA256=$(curl -sS https://mirrors.edge.kernel.org/pub/linux/kernel/v4.x/sha256sums.asc | grep linux-${{ github.event.inputs.set_kernel_version }}.tar.xz | awk '{print $1}')
         sed -i 's/NEW_SHA256/$KERNEL_SHA256/g' $DIY_P1_SH
         cat $DIY_P1_SH

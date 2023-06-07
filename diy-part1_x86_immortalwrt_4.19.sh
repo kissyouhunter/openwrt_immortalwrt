@@ -30,6 +30,6 @@ wget -O ./package/emortal/default-settings/files/openwrt_banner https://raw.gith
 
 # 内核替换成 kernel 4.19.235
 
-sed -i 's/LINUX_KERNEL_HASH-4.19.246 = 00ad2f5a36c91221a2ade0078b93bf84b60d494bd1ef51eaccb5bdb6277dba3a/LINUX_KERNEL_HASH-4.19.VERSION = NEW_SHA256/g' ./include/kernel-version.mk
+sed -i 's/LINUX_KERNEL_HASH-4.19.246 = 00ad2f5a36c91221a2ade0078b93bf84b60d494bd1ef51eaccb5bdb6277dba3a/LINUX_KERNEL_HASH-4.19.VERSION_NUMBER = NEW_SHA256/g' ./include/kernel-version.mk
 
-sed -i 's/LINUX_VERSION-4.19 = .246/LINUX_VERSION-4.19 = .VERSION/g' ./include/kernel-version.mk
+sed -i 's/LINUX_VERSION-4.19 = .246/LINUX_VERSION-4.19 = .VERSION_NUMBER/g' ./include/kernel-version.mk
