@@ -65,7 +65,7 @@ jobs:
         echo "KERNEL_VERSION=${{ github.event.inputs.set_kernel_version }}" >> $GITHUB_ENV
         upload_firmware="${{ github.event.inputs.upload_firmware }}"
         echo "UPLOAD_FIRMWARE=${upload_firmware}" >> $GITHUB_ENV
-
+        echo $KERNEL_VERSION
         NUMBER=$(echo "${KERNEL_VERSION}" | awk -F'.' '{print $NF}')
         echo ${NUMBER}
         #sed -i 's/VERSION_NUMBER/${NUMBER}/g' $GITHUB_WORKSPACE/$DIY_P1_SH
