@@ -65,6 +65,14 @@ jobs:
         echo "KERNEL_VERSION=${{ github.event.inputs.set_kernel_version }}" >> $GITHUB_ENV
         upload_firmware="${{ github.event.inputs.upload_firmware }}"
         echo "UPLOAD_FIRMWARE=${upload_firmware}" >> $GITHUB_ENV
+
+        NUMBER=$(echo "${KERNEL_VERSION}" | awk -F'.' '{print $NF}')
+        echo ${NUMBER}
+        sed -i 's/VERSION_NUMBER/${NUMBER}/g' $DIY_P1_SH
+        KERNEL_SHA256=$(curl -sS https://mirrors.edge.kernel.org/pub/linux/kernel/v4.x/sha256sums.asc | grep linux-${KERNEL_VERSION}.tar.xz | awk '{print $1}')
+        echo ${KERNEL_SHA256}
+        sed -i 's/NEW_SHA256/${KERNEL_SHA256}/g' $DIY_P1_SH
+        cat $DIY_P1_SH
     
     - name: telegrame_bot
       run: |
@@ -114,13 +122,6 @@ jobs:
     - name: Load custom feeds
       run: |
         [ -e $FEEDS_CONF ] && mv $FEEDS_CONF openwrt/feeds.conf.default
-        NUMBER=$(echo "${KERNEL_VERSION}" | awk -F'.' '{print $NF}')
-        echo ${NUMBER}
-        sed -i 's/VERSION_NUMBER/${NUMBER}/g' $DIY_P1_SH
-        KERNEL_SHA256=$(curl -sS https://mirrors.edge.kernel.org/pub/linux/kernel/v4.x/sha256sums.asc | grep linux-${KERNEL_VERSION}.tar.xz | awk '{print $1}')
-        echo ${KERNEL_SHA256}
-        sed -i 's/NEW_SHA256/${KERNEL_SHA256}/g' $DIY_P1_SH
-        cat $DIY_P1_SH
         chmod +x $DIY_P1_SH
         cd openwrt
         $GITHUB_WORKSPACE/$DIY_P1_SH
