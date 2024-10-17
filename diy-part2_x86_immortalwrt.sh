@@ -31,7 +31,7 @@ curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.
 #sed -i "/CYXluq4wUazHjmCDBCqXF/d" package/lean/default-settings/files/zzz-default-settings
 
 #替换coremark ./lede/feeds/packages/utils/coremark/coremark.sh
-wget -O ./feeds/packages/utils/coremark/coremark.sh https://raw.githubusercontent.com/kissyouhunter/openwrt_X86/main/diy/x86_lede/coremark.sh
+#wget -O ./feeds/packages/utils/coremark/coremark.sh https://raw.githubusercontent.com/kissyouhunter/openwrt_X86/main/diy/x86_lede/coremark.sh
 
 # echo '删除重复插件'
 #rm -rf ./feeds/luci/applications/luci-app-netdata
@@ -43,7 +43,7 @@ wget -O ./feeds/packages/utils/coremark/coremark.sh https://raw.githubuserconten
 
 #ZeroTier
 
-sed -i 's/vpn/network/g' ./feeds/luci/applications/luci-app-zerotier/luasrc/controller/*.lua
+#sed -i 's/vpn/network/g' ./feeds/luci/applications/luci-app-zerotier/luasrc/controller/*.lua
 
 #sed -i 's/vpn/network/g' ./package/lean/luci-app-zerotier/luasrc/model/cbi/zerotier/*.lua
 
