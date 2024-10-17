@@ -41,6 +41,8 @@ curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.
 
 ##更改插件位置
 
+sed -i 's|PKG_SOURCE_URL:=@GNU/\$(PKG_NAME)|PKG_SOURCE_URL:=https://ftp.gnu.org/gnu/sed/sed-4.8.tar.xz|' ./tools/sed/Makefile
+
 #ZeroTier
 
 #sed -i 's/vpn/network/g' ./feeds/luci/applications/luci-app-zerotier/luasrc/controller/*.lua
