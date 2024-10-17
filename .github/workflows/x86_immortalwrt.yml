@@ -38,7 +38,7 @@ env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-18.06
   FEEDS_CONF: immortalwrt_4.19.feeds.conf.default
-  CONFIG_FILE: x86_immortalwrt_4.19.config
+  CONFIG_FILE: new.config
   DIY_P2_SH: diy-part2_x86_immortalwrt.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_FIRMWARE: true
