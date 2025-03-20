@@ -23,7 +23,7 @@ on:
         required: false
         default: "false"
 env:
-  REPO_URL: https://github.com/nikkinikki-org/OpenWrt-nikki
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
   FEEDS_CONF: 24.10.feeds.conf.default
   CONFIG_FILE: n1.config
