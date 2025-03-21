@@ -52,7 +52,7 @@ jobs:
           df -hT
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=🎉 Master: Building N1 immortalwrt rootfs on a machine with CPU [$(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)] and [$(nproc)] cores. Please wait... 😋"
+            -d "text=🎉 Master: Building adm64 immortalwrt on a machine with CPU [$(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)] and [$(nproc)] cores. Please wait... 😋"
 
       - name: Initialize Environment
         env:
@@ -205,11 +205,11 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=😭 Master: N1 rootfs firmware compilation failed. Please check it! 😭"
+            -d "text=😭 Master: adm64 firmware compilation failed. Please check it! 😭"
 
       - name: Notify on Success
         if: success()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=✨ Master: N1 rootfs firmware compiled successfully! 💐"
+            -d "text=✨ Master: adm64 firmware compiled successfully! 💐"
