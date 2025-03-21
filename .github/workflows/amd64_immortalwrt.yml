@@ -1,0 +1,205 @@
+#
+# Copyright (c) 2019-2020 P3TERX <https://p3terx.com>
+#
+# This is free software, licensed under the MIT License.
+# See /LICENSE for more information.
+#
+# https://github.com/P3TERX/Actions-OpenWrt
+# Description: Build OpenWrt using GitHub Actions
+#
+
+name: Build OpenWrt amd64 immortalwrt
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      upload_firmware:
+        description: "Whether to upload firmware"
+        required: false
+        default: "false"
+
+env:
+  REPO_URL: https://github.com/immortalwrt/immortalwrt
+  REPO_BRANCH: openwrt-24.10
+  FEEDS_CONF: 24.10.feeds.conf.default
+  CONFIG_FILE: amd64.config
+  DIY_P1_SH: diy-part1_n1_lede.sh
+  DIY_P2_SH: diy-part2_n1_lede.sh
+  UPLOAD_BIN_DIR: false
+  UPLOAD_COWTRANSFER: false
+  UPLOAD_WETRANSFER: false
+  SERVERCHAN_SCKEY: true
+  USE_CACHEWRTBUILD: true
+  TZ: Asia/Shanghai
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Initialize Telegram Notification
+        run: |
+          echo "Warning: Server performance is limited, ensure CPU capacity if many plugins are selected!"
+          echo "Known CPU models (descending performance): 7763, 8370C, 8272CL, 8171M, E5-2673"
+          echo "-------------------------- CPU Info --------------------------"
+          echo "Physical CPUs: $(nproc --all | grep -c 'physical id')"
+          echo "CPU Cores: $(nproc)"
+          echo "CPU Model: $(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)"
+          echo "-------------------------- Memory Info --------------------------"
+          echo "$(free -h | grep 'Mem:')"
+          echo "-------------------------- Disk Info --------------------------"
+          df -hT
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=🎉 Master: Building N1 immortalwrt rootfs on a machine with CPU [$(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)] and [$(nproc)] cores. Please wait... 😋"
+
+      - name: Initialize Environment
+        env:
+          DEBIAN_FRONTEND: noninteractive
+        run: |
+          docker rmi $(docker images -q) 2>/dev/null
+          [[ -n "${AGENT_TOOLSDIRECTORY}" ]] && sudo rm -rf "${AGENT_TOOLSDIRECTORY}"
+          sudo rm -rf /usr/share/dotnet /etc/apt/sources.list.d /usr/local/lib/android 2>/dev/null
+          sudo swapoff -a
+          sudo rm -f /swapfile /mnt/swapfile
+          sudo -E apt-get -y update
+          sudo -E apt-get -y purge azure-cli ghc* zulu* llvm* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
+          sudo -E apt-get -y install $(curl -fsSL https://is.gd/depend_ubuntu2204_openwrt)
+          sudo -E systemctl daemon-reload
+          #sudo -E apt-get -y full-upgrade
+          sudo -E apt-get -y autoremove --purge
+          sudo -E apt-get clean
+          sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
+          sudo rm -rf ~/{.cargo,.dotnet,.rustup}
+          sudo timedatectl set-timezone "${TZ}"
+          echo "UPLOAD_FIRMWARE=${{ github.event.inputs.upload_firmware }}" >> $GITHUB_ENV
+
+      - name: Maximize Disk Space
+        uses: easimon/maximize-build-space@master
+        with:
+          swap-size-mb: 1024
+          root-reserve-mb: 512
+          remove-dotnet: true
+
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Clone OpenWrt Source
+        run: |
+          git clone "$REPO_URL" -b "$REPO_BRANCH" openwrt
+          df -hT "$GITHUB_WORKSPACE"
+
+      #- name: Load Custom Feeds
+      #  run: |
+      #    [ -f "$FEEDS_CONF" ] && mv "$FEEDS_CONF" openwrt/feeds.conf.default
+      #    chmod +x "$DIY_P1_SH"
+      #    $GITHUB_WORKSPACE/$DIY_P1_SH
+
+      - name: Update Feeds && Install Feeds
+        run: |
+          cd openwrt && ./scripts/feeds update -a && ./scripts/feeds install -a
+
+      - name: Load Custom Configuration
+        run: |
+          [ -d files ] && mv files openwrt/files
+          [ -f "$CONFIG_FILE" ] && mv "$CONFIG_FILE" openwrt/.config
+          chmod +x "$DIY_P2_SH"
+          cd openwrt && $GITHUB_WORKSPACE/$DIY_P2_SH
+
+      - name: Set File Permissions
+        run: |
+          #cd openwrt
+          #mkdir -p files/usr/sbin
+          #cp $GITHUB_WORKSPACE/diy/n1_lede/usr/sbin/update files/usr/sbin/update -v
+          #cp $GITHUB_WORKSPACE/diy/n1_lede/usr/sbin/install files/usr/sbin/install -v
+          chmod -R 755 .
+        
+      - name: Download Dependencies
+        id: package
+        run: |
+          cd openwrt
+          make defconfig
+          make download -j8
+          find dl -size -1024c -exec ls -l {} \;
+          find dl -size -1024c -exec rm -f {} \;
+
+      - name: Compile Firmware
+        id: compile
+        run: |
+          cd openwrt
+          echo "Compiling with $(nproc) threads"
+          make -j$(nproc) || make -j1 V=s
+          echo "status=success" >> $GITHUB_OUTPUT
+          grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
+          [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
+          echo "FILE_DATE=_$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
+
+      - name: Check Disk Usage
+        if: always()
+        run: df -hT "$GITHUB_WORKSPACE"
+
+      - name: Verify and Locate Firmware File
+        id: verify
+        run: |
+          cd openwrt/bin/targets/*/*
+          ls -lh *.tar.gz || echo "No .tar.gz files found!"
+          FIRMWARE_FILE=$(ls *.tar.gz 2>/dev/null | head -n 1)
+          if [ -n "$FIRMWARE_FILE" ]; then
+            echo "Firmware file found: $FIRMWARE_FILE"
+            echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+            echo "FIRMWARE_FILE=$FIRMWARE_FILE" >> $GITHUB_ENV
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Error: No .tar.gz firmware file found!"
+            echo "status=failure" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Upload Bin Directory
+        if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
+        uses: actions/upload-artifact@master
+        with:
+          name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: openwrt/bin
+
+      - name: Organize Firmware Files
+        id: organize
+        if: steps.compile.outputs.status == 'success' && !cancelled()
+        run: |
+          cd openwrt/bin/targets/*/*
+          rm -rf packages
+          echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+          echo "status=success" >> $GITHUB_OUTPUT
+
+      - name: Upload Firmware Directory
+        if: steps.organize.outputs.status == 'success' && env.UPLOAD_FIRMWARE == 'true' && !cancelled()
+        uses: actions/upload-artifact@master
+        with:
+          name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: ${{ env.FIRMWARE }}
+
+      - name: Publish Firmware to Release
+        if: steps.verify.outputs.status == 'success' && !cancelled()
+        uses: ncipollo/release-action@v1
+        with:
+          token: ${{ secrets.REPO_TOKEN }}
+          name: rootfs
+          tag: rootfs
+          commit: main
+          allowUpdates: true
+          artifacts: ${{ env.FIRMWARE }}/${{ env.FIRMWARE_FILE }}
+
+      - name: Notify on Failure
+        if: failure()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=😭 Master: N1 rootfs firmware compilation failed. Please check it! 😭"
+
+      - name: Notify on Success
+        if: success()
+        run: |
+          curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
+            -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
+            -d "text=✨ Master: N1 rootfs firmware compiled successfully! 💐"
