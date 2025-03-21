@@ -170,18 +170,22 @@ jobs:
         id: organize
         if: steps.compile.outputs.status == 'success' && !cancelled()
         run: |
-          for dir in openwrt/bin/targets/*/*; do
-            if [ -d "$dir" ]; then
-              cd "$dir"
-              mkdir -p ../temp
-              find . -type f -name "*.gz" -exec mv {} ../temp/ \;
-              rm -rf ./*
-              if ls ../temp/*.gz >/dev/null 2>&1; then
-                mv ../temp/*.gz .
-              rm -rf ../temp
-              echo "Processed $dir"
+          cd openwrt/bin/targets/*/*
+          DATE=$(date +%Y%m%d)
+          mkdir -p ../temp
+          find . -type f -name "*.gz" | while read -r file; do
+            if [[ "$(basename "$file")" == immortalwrt-x86-64-* ]]; then
+              new_name=$(basename "$file" | sed "s/x86-64-/x86-64-${DATE}-/")
+              mv "$file" "../temp/$new_name"
+            else
+              mv "$file" "../temp/"
             fi
           done
+          rm -rf ./*
+          if ls ../temp/*.gz >/dev/null 2>&1; then
+            mv ../temp/*.gz .
+          fi
+          rm -rf ../temp
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
 
