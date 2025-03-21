@@ -11,7 +11,8 @@
 #
 
 # Modify default IP
-sed -i 's/192.168.2.4/192.168.0.2/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.1.1/192.168.2.4/g' package/base-files/files/bin/config_generate
+sed -i 's/255.255.255.0/255.255.0.0/g' package/base-files/files/bin/config_generate
 
 #修改主机名
 sed -i 's/ImmortalWrt/ImmortalWrt_N1/g' package/base-files/files/bin/config_generate
@@ -22,11 +23,8 @@ sed -i 's/ImmortalWrt/ImmortalWrt_N1/g' package/base-files/files/bin/config_gene
 #修改build日期
 # curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/99-default-settings/openwrt-21.02/99-default-settings
 
-#删除默认密码
-#sed -i "/CYXluq4wUazHjmCDBCqXF/d" package/lean/default-settings/files/zzz-default-settings
-
-#替换coremark ./lede/feeds/packages/utils/coremark/coremark.sh
-# wget -O ./feeds/packages/utils/coremark/coremark.sh https://raw.githubusercontent.com/kissyouhunter/openwrt_X86/main/diy/x86_lede/coremark.sh
+#添加插件
+cd ./package/feeds/luci/ && git clone https://github.com/DongyangHu/luci-app-poweroff.git
 
 # echo '删除重复插件'
 #rm -rf ./feeds/luci/applications/luci-app-netdata
