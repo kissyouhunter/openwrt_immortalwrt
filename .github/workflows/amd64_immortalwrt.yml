@@ -174,10 +174,10 @@ jobs:
             if [ -d "$dir" ]; then
               cd "$dir"
               mkdir -p ../temp
-              find . -type f -name "*.tar.gz" -exec mv {} ../temp/ \;
+              find . -type f -name "*.gz" -exec mv {} ../temp/ \;
               rm -rf ./*
-              if ls ../temp/*.tar.gz >/dev/null 2>&1; then
-                mv ../temp/*.tar.gz .
+              if ls ../temp/*.gz >/dev/null 2>&1; then
+                mv ../temp/*.gz .
               rm -rf ../temp
               echo "Processed $dir"
             fi
