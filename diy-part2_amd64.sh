@@ -25,7 +25,7 @@ sed -i 's/ImmortalWrt/ImmortalWrt_Amd64/g' package/base-files/files/bin/config_g
 
 #添加插件
 cd ./package/feeds/luci/ && git clone https://github.com/DongyangHu/luci-app-poweroff.git
-git clone https://github.com/kenzok8/openwrt-packages.git && mv openwrt-packages/luci-app-adguardhome ./package/feeds/luci/luci-app-adguardhome && rm -rf openwrt-packages
+git clone https://github.com/kenzok8/openwrt-packages.git && mv ./openwrt-packages/luci-app-adguardhome ./package/feeds/luci/luci-app-adguardhome && rm -rf openwrt-packages
 
 # echo '删除重复插件'
 #rm -rf ./feeds/luci/applications/luci-app-netdata
