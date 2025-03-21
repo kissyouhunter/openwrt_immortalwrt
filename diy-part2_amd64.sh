@@ -24,7 +24,7 @@ sed -i 's/ImmortalWrt/ImmortalWrt_Amd64/g' package/base-files/files/bin/config_g
 # curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/99-default-settings/openwrt-21.02/99-default-settings
 
 #添加插件
-cd ./package/feeds/luci/ && git clone https://github.com/DongyangHu/luci-app-poweroff.git
+git clone https://github.com/DongyangHu/luci-app-poweroff.git ./package/feeds/luci/luci-app-poweroff
 git clone https://github.com/kenzok8/openwrt-packages.git && mv ./openwrt-packages/luci-app-adguardhome ./package/feeds/luci/luci-app-adguardhome && rm -rf openwrt-packages
 
 # echo '删除重复插件'
