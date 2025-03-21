@@ -170,8 +170,18 @@ jobs:
         id: organize
         if: steps.compile.outputs.status == 'success' && !cancelled()
         run: |
-          cd openwrt/bin/targets/*/*
-          rm -rf packages
+          for dir in openwrt/bin/targets/*/*; do
+            if [ -d "$dir" ]; then
+              cd "$dir"
+              mkdir -p ../temp
+              find . -type f -name "*.tar.gz" -exec mv {} ../temp/ \;
+              rm -rf ./*
+              if ls ../temp/*.tar.gz >/dev/null 2>&1; then
+                mv ../temp/*.tar.gz .
+              rm -rf ../temp
+              echo "Processed $dir"
+            fi
+          done
           echo "FIRMWARE=$PWD" >> $GITHUB_ENV
           echo "status=success" >> $GITHUB_OUTPUT
 
