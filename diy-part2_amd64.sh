@@ -15,7 +15,7 @@ sed -i 's/192.168.1.1/192.168.2.3/g' package/base-files/files/bin/config_generat
 sed -i 's/255.255.255.0/255.255.0.0/g' package/base-files/files/bin/config_generate
 
 #修改主机名
-sed -i 's/ImmortalWrt/ImmortalWrt_N1/g' package/base-files/files/bin/config_generate
+sed -i 's/ImmortalWrt/ImmortalWrt_Amd64/g' package/base-files/files/bin/config_generate
 
 # 添加旁路由防火墙
 #echo "#iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
