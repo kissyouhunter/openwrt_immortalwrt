@@ -184,11 +184,21 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.REPO_TOKEN }}
-          name: rootfs
-          tag: rootfs
+          name: Openwrt_X86_without_docker
+          tag: openwrt_x86
           commit: main
           allowUpdates: true
-          artifacts: ${{ env.FIRMWARE }}/*.tar.gz
+          repo: Openwrt_X86-Openwrt_N1-Armbian_N1
+          body: |
+            ## Openwrt_X86:
+
+            * lede 大雕 openwrt 内核 5.4 5.10, 5.15, 6.1 (5.15 和 6.1 为精简旁路由版)
+            * immortalwrt 天灵 openwrt 24.10 内核 6.6
+            * IP: 192.168.2.3 | ID: root | Password: password
+            * rootfs 文件适用于 lxc，例如 PVE 的 CT 模板 ([教程](https://nb0.cc/lxc))
+            * x86 固件不带 docker，请使用一键脚本自行安装
+            * （一键脚本： bash <(curl -s -S -L nb0.cc/kiss) 或者 curl -Lo kiss.sh nb0.cc/kiss && bash kiss.sh）
+          artifacts: ${{ env.FIRMWARE }}/*
 
       - name: Notify on Failure
         if: failure()
