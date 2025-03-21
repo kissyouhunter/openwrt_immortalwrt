@@ -24,8 +24,8 @@ env:
   REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: 24.10.feeds.conf.default
   CONFIG_FILE: amd64.config
-  DIY_P1_SH: diy-part1_n1_lede.sh
-  DIY_P2_SH: diy-part2_n1_lede.sh
+  DIY_P1_SH: diy-part1_amd64.sh
+  DIY_P2_SH: diy-part2_amd64.sh
   UPLOAD_BIN_DIR: false
   UPLOAD_COWTRANSFER: false
   UPLOAD_WETRANSFER: false
@@ -144,11 +144,11 @@ jobs:
         run: |
           cd openwrt/bin/targets/*/*
           ls -lh *.tar.gz || echo "No .tar.gz files found!"
-          FIRMWARE_FILE=$(ls *.tar.gz 2>/dev/null | head -n 1)
-          if [ -n "$FIRMWARE_FILE" ]; then
-            echo "Firmware file found: $FIRMWARE_FILE"
+          FIRMWARE_FILES=$(ls *.tar.gz 2>/dev/null)
+          if [ -n "$FIRMWARE_FILES" ]; then
+            echo "Firmware files found: $FIRMWARE_FILES"
             echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-            echo "FIRMWARE_FILE=$FIRMWARE_FILE" >> $GITHUB_ENV
+            echo "FIRMWARE_FILES=$FIRMWARE_FILES" >> $GITHUB_ENV
             echo "status=success" >> $GITHUB_OUTPUT
           else
             echo "Error: No .tar.gz firmware file found!"
@@ -188,7 +188,7 @@ jobs:
           tag: rootfs
           commit: main
           allowUpdates: true
-          artifacts: ${{ env.FIRMWARE }}/${{ env.FIRMWARE_FILE }}
+          artifacts: ${{ env.FIRMWARE }}/*.tar.gz
 
       - name: Notify on Failure
         if: failure()
