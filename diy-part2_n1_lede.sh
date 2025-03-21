@@ -11,23 +11,22 @@
 #
 
 # Modify default IP
-#sed -i 's/192.168.1.1/192.168.50.5/g' package/base-files/files/bin/config_generate
-sed -i 's/192.168.1.1/192.168.2.3/g' package/base-files/files/bin/config_generate
+sed -i 's/192.168.2.4/192.168.0.2/g' package/base-files/files/bin/config_generate
 
 #修改主机名
-#sed -i 's/OpenWrt/N1/g' package/base-files/files/bin/config_generate
+sed -i 's/ImmortalWrt/ImmortalWrt_N1/g' package/base-files/files/bin/config_generate
 
 # 添加旁路由防火墙
-echo "#iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
+#echo "#iptables -t nat -I POSTROUTING -o eth0 -j MASQUERADE" >> package/network/config/firewall/files/firewall.user
 
 #修改build日期
-curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/99-default-settings/openwrt-21.02/99-default-settings
+# curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/99-default-settings/openwrt-21.02/99-default-settings
 
 #删除默认密码
 #sed -i "/CYXluq4wUazHjmCDBCqXF/d" package/lean/default-settings/files/zzz-default-settings
 
 #替换coremark ./lede/feeds/packages/utils/coremark/coremark.sh
-wget -O ./feeds/packages/utils/coremark/coremark.sh https://raw.githubusercontent.com/kissyouhunter/openwrt_X86/main/diy/x86_lede/coremark.sh
+# wget -O ./feeds/packages/utils/coremark/coremark.sh https://raw.githubusercontent.com/kissyouhunter/openwrt_X86/main/diy/x86_lede/coremark.sh
 
 # echo '删除重复插件'
 #rm -rf ./feeds/luci/applications/luci-app-netdata
