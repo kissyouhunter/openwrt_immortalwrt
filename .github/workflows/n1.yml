@@ -15,9 +15,10 @@ on:
   workflow_dispatch:
     inputs:
       upload_firmware:
-        description: "whether to  upload firmware."
+        description: "Whether to upload firmware"
         required: false
         default: "false"
+
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: master
@@ -72,8 +73,7 @@ jobs:
           sudo sed -i '/NVM_DIR/d;/skel/d' /root/{.bashrc,.profile}
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
-          upload_firmware="${{ github.event.inputs.upload_firmware }}"
-          echo "UPLOAD_FIRMWARE=${upload_firmware}" >> $GITHUB_ENV
+          echo "UPLOAD_FIRMWARE=${{ github.event.inputs.upload_firmware }}" >> $GITHUB_ENV
 
       - name: Maximize Disk Space
         uses: easimon/maximize-build-space@master
@@ -96,22 +96,22 @@ jobs:
           chmod +x "$DIY_P1_SH"
           $GITHUB_WORKSPACE/$DIY_P1_SH
 
-      - name: Update feeds
-        run: cd openwrt && ./scripts/feeds update -a
-
-      - name: Load custom configuration
+      - name: Update Feeds
         run: |
-          [ -e files ] && mv files openwrt/files
-          [ -e $CONFIG_FILE ] && mv $CONFIG_FILE openwrt/.config
-          chmod +x $DIY_P2_SH
-          cd openwrt
-          $GITHUB_WORKSPACE/$DIY_P2_SH
+          cd openwrt && ./scripts/feeds update -a
 
-      - name: Install feeds
+      - name: Load Custom Configuration
+        run: |
+          [ -d files ] && mv files openwrt/files
+          [ -f "$CONFIG_FILE" ] && mv "$CONFIG_FILE" openwrt/.config
+          chmod +x "$DIY_P2_SH"
+          cd openwrt && $GITHUB_WORKSPACE/$DIY_P2_SH
+
+      - name: Install Feeds
         run: |
           cd openwrt && ./scripts/feeds install -a
-          
-      - name: chmod
+
+      - name: Set File Permissions
         run: |
           cd openwrt
           mkdir -p files/usr/sbin
@@ -143,6 +143,23 @@ jobs:
         if: always()
         run: df -hT "$GITHUB_WORKSPACE"
 
+      - name: Verify and Locate Firmware File
+        id: verify
+        run: |
+          cd openwrt/bin/targets/*/*
+          ls -lh *.tar.gz || echo "No .tar.gz files found!"
+          FIRMWARE_FILE=$(ls *.tar.gz 2>/dev/null | head -n 1)
+          if [ -n "$FIRMWARE_FILE" ]; then
+            echo "Firmware file found: $FIRMWARE_FILE"
+            echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+            echo "FIRMWARE_FILE=$FIRMWARE_FILE" >> $GITHUB_ENV
+            echo "status=success" >> $GITHUB_OUTPUT
+          else
+            echo "Error: No .tar.gz firmware file found!"
+            echo "status=failure" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
       - name: Upload Bin Directory
         if: steps.compile.outputs.status == 'success' && env.UPLOAD_BIN_DIR == 'true'
         uses: actions/upload-artifact@master
@@ -167,7 +184,7 @@ jobs:
           path: ${{ env.FIRMWARE }}
 
       - name: Publish Firmware to Release
-        if: steps.organize.outputs.status == 'success' && !cancelled()
+        if: steps.verify.outputs.status == 'success' && !cancelled()
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.REPO_TOKEN }}
@@ -175,7 +192,7 @@ jobs:
           tag: rootfs
           commit: main
           allowUpdates: true
-          artifacts: ${{ env.FIRMWARE }}/openwrt-armvirt-64-generic-rootfs.tar.gz
+          artifacts: ${{ env.FIRMWARE }}/${{ env.FIRMWARE_FILE }}
 
       - name: Notify on Failure
         if: failure()
