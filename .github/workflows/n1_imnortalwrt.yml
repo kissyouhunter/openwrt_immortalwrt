@@ -8,7 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt N1_rootfs
+name: Build OpenWrt N1_rootfs_imnortalwrt
 
 on:
   repository_dispatch:
@@ -90,11 +90,11 @@ jobs:
           git clone "$REPO_URL" -b "$REPO_BRANCH" openwrt
           df -hT "$GITHUB_WORKSPACE"
 
-      - name: Load Custom Feeds
-        run: |
-          [ -f "$FEEDS_CONF" ] && mv "$FEEDS_CONF" openwrt/feeds.conf.default
-          chmod +x "$DIY_P1_SH"
-          $GITHUB_WORKSPACE/$DIY_P1_SH
+      #- name: Load Custom Feeds
+      #  run: |
+      #    [ -f "$FEEDS_CONF" ] && mv "$FEEDS_CONF" openwrt/feeds.conf.default
+      #    chmod +x "$DIY_P1_SH"
+      #    $GITHUB_WORKSPACE/$DIY_P1_SH
 
       - name: Update Feeds
         run: |
