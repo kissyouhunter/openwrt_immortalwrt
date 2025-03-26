@@ -21,7 +21,7 @@ on:
 
 env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
-  REPO_BRANCH: openwrt-24.10
+  REPO_BRANCH: master
   FEEDS_CONF: 24.10.feeds.conf.default
   CONFIG_FILE: amd64.config
   DIY_P1_SH: diy-part1_amd64.sh
