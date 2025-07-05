@@ -150,7 +150,7 @@ jobs:
         run: |
           CONFIG_FILE="${{ github.event.inputs.config_file }}"
           if [[ "$CONFIG_FILE" == "n1_docker.config" ]]; then
-            echo "RELEASE_NAME=rootfs with docker" >> $GITHUB_ENV
+            echo "RELEASE_NAME=rootfs_with_docker" >> $GITHUB_ENV
             echo "RELEASE_TAG=rootfs_with_docker" >> $GITHUB_ENV
           else
             echo "RELEASE_NAME=rootfs" >> $GITHUB_ENV
