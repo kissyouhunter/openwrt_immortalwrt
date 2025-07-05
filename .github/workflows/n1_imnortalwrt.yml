@@ -14,6 +14,14 @@ on:
   repository_dispatch:
   workflow_dispatch:
     inputs:
+      config_file:
+        description: "Select config file"
+        required: true
+        default: "n1.config"
+        type: choice
+        options:
+          - n1.config
+          - n1_docker.config
       upload_firmware:
         description: "Whether to upload firmware"
         required: false
@@ -23,7 +31,6 @@ env:
   REPO_URL: https://github.com/immortalwrt/immortalwrt
   REPO_BRANCH: openwrt-24.10
   FEEDS_CONF: 24.10.feeds.conf.default
-  CONFIG_FILE: n1.config
   DIY_P1_SH: diy-part1_n1.sh
   DIY_P2_SH: diy-part2_n1.sh
   UPLOAD_BIN_DIR: false
@@ -52,7 +59,7 @@ jobs:
           df -hT
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=🎉 Master: Building n1 immortalwrt roofts on a machine with CPU [$(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)] and [$(nproc)] cores. Please wait... 😋"
+            -d "text=🎉 Master: Building n1 immortalwrt rootfs on a machine with CPU [$(lscpu | grep 'Model name' | awk -F: '{print $2}' | xargs)] and [$(nproc)] cores. Please wait... 😋"
 
       - name: Initialize Environment
         env:
@@ -77,6 +84,7 @@ jobs:
           sudo rm -rf ~/{.cargo,.dotnet,.rustup}
           sudo timedatectl set-timezone "${TZ}"
           echo "UPLOAD_FIRMWARE=${{ github.event.inputs.upload_firmware }}" >> $GITHUB_ENV
+          echo "CONFIG_FILE=${{ github.event.inputs.config_file }}" >> $GITHUB_ENV
 
       - name: Maximize Disk Space
         uses: easimon/maximize-build-space@master
@@ -105,7 +113,7 @@ jobs:
 
       - name: Load Custom Configuration
         run: |
-          #[ -d files ] && mv files openwrt/files
+          CONFIG_FILE="${{ github.event.inputs.config_file }}"
           [ -f "$CONFIG_FILE" ] && mv "$CONFIG_FILE" openwrt/.config
           chmod +x "$DIY_P2_SH"
           cd openwrt && $GITHUB_WORKSPACE/$DIY_P2_SH
@@ -117,7 +125,7 @@ jobs:
           #cp $GITHUB_WORKSPACE/diy/n1_lede/usr/sbin/update files/usr/sbin/update -v
           #cp $GITHUB_WORKSPACE/diy/n1_lede/usr/sbin/install files/usr/sbin/install -v
           chmod -R 755 .
-        
+
       - name: Download Dependencies
         id: package
         run: |
@@ -137,6 +145,17 @@ jobs:
           grep '^CONFIG_TARGET.*DEVICE.*=y' .config | sed -r 's/.*DEVICE_(.*)=y/\1/' > DEVICE_NAME
           [ -s DEVICE_NAME ] && echo "DEVICE_NAME=_$(cat DEVICE_NAME)" >> $GITHUB_ENV
           echo "FILE_DATE=_$(date +'%Y%m%d%H%M')" >> $GITHUB_ENV
+
+      - name: Set Release Name and Tag
+        run: |
+          CONFIG_FILE="${{ github.event.inputs.config_file }}"
+          if [[ "$CONFIG_FILE" == "n1_docker.config" ]]; then
+            echo "RELEASE_NAME=rootfs with docker" >> $GITHUB_ENV
+            echo "RELEASE_TAG=rootfs_with_docker" >> $GITHUB_ENV
+          else
+            echo "RELEASE_NAME=rootfs" >> $GITHUB_ENV
+            echo "RELEASE_TAG=rootfs" >> $GITHUB_ENV
+          fi
 
       - name: Check Disk Usage
         if: always()
@@ -187,8 +206,8 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           token: ${{ secrets.REPO_TOKEN }}
-          name: rootfs
-          tag: rootfs
+          name: ${{ env.RELEASE_NAME }}
+          tag: ${{ env.RELEASE_TAG }}
           commit: main
           allowUpdates: true
           artifacts: ${{ env.FIRMWARE }}/${{ env.FIRMWARE_FILE }}
@@ -198,11 +217,11 @@ jobs:
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=😭 Master: n1 immortalwrt roofts firmware compilation failed. Please check it! 😭"
+            -d "text=😭 Master: n1 immortalwrt rootfs firmware compilation failed. Please check it! 😭"
 
       - name: Notify on Success
         if: success()
         run: |
           curl -s -X POST "https://api.telegram.org/bot${{ secrets.TELEGRAM_BOT_TOKEN }}/sendMessage" \
             -d chat_id="${{ secrets.TELEGRAM_CHAT_ID }}" \
-            -d "text=✨ Master: n1 immortalwrt roofts firmware compiled successfully! 💐"
+            -d "text=✨ Master: n1 immortalwrt rootfs firmware compiled successfully! 💐"
