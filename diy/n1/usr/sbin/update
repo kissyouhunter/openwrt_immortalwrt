@@ -1,0 +1,44 @@
+#!/bin/sh
+
+SCRIPT_URL="https://raw.githubusercontent.com/kissyouhunter/Openwrt_X86-Openwrt_N1-Armbian_N1/main/update_scripts/update-N1.sh"
+LOCAL_SCRIPT="/usr/sbin/update-N1.sh"
+TMP_SCRIPT="/tmp/update-N1.sh"
+CHECKSUM_CMD="sha256sum"
+
+download_and_replace() {
+    if curl -s -o "$TMP_SCRIPT" "$SCRIPT_URL"; then
+        # 检查文件是否是个正确脚本（开头是否为 #! 开头）
+        if [ -s "$TMP_SCRIPT" ] && grep -q '^#!' "$TMP_SCRIPT"; then
+            if [ -f "$LOCAL_SCRIPT" ]; then
+                OLD_SUM=$($CHECKSUM_CMD "$LOCAL_SCRIPT" | awk '{print $1}')
+                NEW_SUM=$($CHECKSUM_CMD "$TMP_SCRIPT" | awk '{print $1}')
+                if [ "$OLD_SUM" != "$NEW_SUM" ]; then
+                    mv "$TMP_SCRIPT" "$LOCAL_SCRIPT"
+                    chmod +x "$LOCAL_SCRIPT"
+                    echo "[update] 检测到脚本有更新，已自动升级本地脚本。"
+                else
+                    echo "[update] 当前已是最新脚本，无需更新。"
+                    rm -f "$TMP_SCRIPT"
+                fi
+            else
+                mv "$TMP_SCRIPT" "$LOCAL_SCRIPT"
+                chmod +x "$LOCAL_SCRIPT"
+                echo "[update] 本地无脚本，已自动下载最新版本。"
+            fi
+        else
+            echo "[update] 下载内容无效（不是 shell 脚本），跳过更新。"
+            rm -f "$TMP_SCRIPT"
+        fi
+    else
+        echo "[update] 获取远程更新脚本失败，使用本地已有脚本。"
+    fi
+}
+
+download_and_replace
+
+if [ -f "$LOCAL_SCRIPT" ]; then
+    bash "$LOCAL_SCRIPT"
+else
+    echo "[update] 本地脚本不存在且无法下载安装，更新失败，请检查网络！"
+    exit 1
+fi
