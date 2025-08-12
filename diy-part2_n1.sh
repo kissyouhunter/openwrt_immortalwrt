@@ -26,8 +26,8 @@ sed -i 's/ImmortalWrt/ImmortalWrt_N1/g' package/base-files/files/bin/config_gene
 #删除插件
 rm -rf ./package/feeds/luci/luci-app-homeproxy
 rm -rf ./feeds/luci/applications/luci-app-homeproxy
-# rm -rf ./feeds/luci/applications/luci-app-passwall
-# rm -rf ./package/feeds/luci/luci-app-passwall
+rm -rf ./feeds/luci/applications/luci-app-passwall
+rm -rf ./package/feeds/luci/luci-app-passwall
 
 #添加插件
 git clone https://github.com/DongyangHu/luci-app-poweroff.git ./package/feeds/luci/luci-app-poweroff
