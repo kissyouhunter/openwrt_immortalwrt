@@ -23,12 +23,6 @@ sed -i 's/ImmortalWrt/ImmortalWrt_Amd64/g' package/base-files/files/bin/config_g
 #修改build日期
 # curl -Lo package/emortal/default-settings/files/99-default-settings https://raw.githubusercontent.com/kissyouhunter/openwrt_immortalwrt/main/diy/99-default-settings/openwrt-21.02/99-default-settings
 
-#删除插件
-rm -rf ./package/feeds/luci/luci-app-homeproxy
-rm -rf ./feeds/luci/applications/luci-app-homeproxy
-rm -rf ./feeds/luci/applications/luci-app-passwall
-rm -rf ./package/feeds/luci/luci-app-passwall
-
 #添加插件
 git clone https://github.com/DongyangHu/luci-app-poweroff.git ./package/feeds/luci/luci-app-poweroff
 git clone https://github.com/kenzok8/openwrt-packages.git && mv ./openwrt-packages/luci-app-adguardhome ./package/feeds/luci/luci-app-adguardhome && rm -rf openwrt-packages
