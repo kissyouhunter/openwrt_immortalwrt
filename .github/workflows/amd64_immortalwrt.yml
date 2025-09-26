@@ -65,10 +65,7 @@ jobs:
           sudo rm -f /swapfile /mnt/swapfile
           sudo -E apt-get -qq -y update
           sudo -E apt-get -qq -y purge azure-cli ghc* zulu* firefox google* dotnet* powershell openjdk* mongodb* moby* || true
-          sudo -E apt-get -qq -y install $(curl -fsSL https://is.gd/depend_ubuntu2204_openwrt)
-          sudo apt-get -qq -y install clang-14
-          export CC=/usr/bin/clang-14
-          export CXX=/usr/bin/clang++-14
+          sudo -E apt-get -qq -y install $(curl -fsSL https://raw.githubusercontent.com/ophub/amlogic-s9xxx-armbian/main/compile-kernel/tools/script/ubuntu2204-make-openwrt-depends)
           sudo -E systemctl daemon-reload
           #sudo -E apt-get -qq -y full-upgrade
           sudo -E apt-get -qq -y autoremove --purge
